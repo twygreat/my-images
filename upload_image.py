@@ -50,9 +50,16 @@ def upload_to_github(image_path, category):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{timestamp}{ext}"
     
+    # 月份文件夹（如 2026-03）
+    month_folder = datetime.now().strftime("%Y-%m")
+    
     # 仓库路径
     repo_path = get_repo_path()
-    category_path = os.path.join(repo_path, category)
+    category_path = os.path.join(repo_path, category, month_folder)
+    
+    # 创建月份文件夹
+    os.makedirs(category_path, exist_ok=True)
+    
     dest_path = os.path.join(category_path, filename)
     
     # 复制文件
@@ -84,8 +91,8 @@ def upload_to_github(image_path, category):
         time.sleep(1)
         subprocess.run(["git", "push", "-u", "origin", DEFAULT_BRANCH], capture_output=True)
     
-    # 生成 URL
-    image_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/{DEFAULT_BRANCH}/{category}/{filename}"
+    # 生成 URL（包含月份文件夹）
+    image_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{REPO_NAME}/{DEFAULT_BRANCH}/{category}/{month_folder}/{filename}"
     
     return image_url
 
